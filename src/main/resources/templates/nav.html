@@ -1,0 +1,43 @@
+<div class="navbar-default navbar-static-side" role="navigation" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu">
+            <li>
+                <a th:href="@{/dashboard}" class="lazy-link"><i class="fa fa-dashboard fa-fw"></i> &nbsp; Tableau de bord</a>
+            </li>
+            <th:block th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}">
+                <li>
+                    <a class="lazy-link" th:href="@{/log/list}"><i class="fa fa-history fa-fw"></i> &nbsp; Historique</a>
+                </li>
+                <li>
+                    <a class="lazy-link" th:href="@{/student/list}"><i class="fa fa-users fa-fw"></i> &nbsp; Étudiants</a>
+                </li>
+                <li>
+                    <a class="lazy-link" th:href="@{/user/list}"><i class="fa fa-desktop fa-fw"></i> &nbsp; Utilisateurs</a>
+                </li>
+                <li>
+                    <a class="lazy-link" th:href="@{/housing/list}"><i class="fa fa-building-o fa-fw"></i> &nbsp; Logements</a>
+                </li>
+            </th:block>
+            <li>
+                <a class="lazy-link" th:href="@{/lease/list}"><i class="fa fa-file-pdf-o fa-fw"></i> &nbsp; Contrats de bail</a>
+            </li>
+            <li>
+                <a class="lazy-link" th:href="@{/payment/list}"><i class="fa fa-money fa-fw"></i> &nbsp; Paiements</a>
+            </li>
+            <li th:if="${T(com.estate.domain.enumaration.Profil).STUDENT.equals(session?.user?.profil)}">
+                <a class="text-decoration-none" th:href="@{/policy}"><i class="fa fa-book fa-fw"></i> &nbsp; Règlement intérieur</a>
+            </li>
+            <li th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}">
+                <a href="#"><i class="fa fa-cogs fa-fw"></i> &nbsp; Réglages<span class="fa arrow" style="margin-top: 4px"></span></a>
+                <ul class="nav nav-second-level collapse">
+                    <li>
+                        <a class="lazy-link" th:href="@{/standing/list}">Standings</a>
+                    </li>
+                    <li>
+                        <a class="lazy-link" th:href="@{/setting/list}">Paramètres</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

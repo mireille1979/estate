@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:insert="base.html :: head(${#strings.isEmpty(user.id) ? 'Nouvel utilisateur' : 'Modification de l''utilisateur'})"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/user/list}">Utilisateurs</a></li>
+                <li th:text="${#strings.isEmpty(user.id) ? 'Nouvel utilisateur' : 'Modification de l''utilisateur'}"></li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <b>Formulaire : </b> <span style="font-size: 13px">Les champs avec l'astérisque ( <span class="required-field">*</span> ) sont obligatoires</span>
+                    </div>
+                    <form th:object="${user}" onsubmit="submitMultipartForm(event)" th:action="@{/user/save}" enctype="multipart/form-data" autocomplete="off" method="post">
+                        <div class="panel-body">
+                            <input th:field="*{id}" type="hidden">
+                            <div class="row">
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('firstName') ? 'has-error' : ''}">
+                                    <label for="firstName" class="control-label">Nom <span class="required-field">*</span></label>
+                                    <input id="firstName" th:field="*{firstName}" class="form-control" autocomplete="off" required>
+                                    <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="help-block"></p>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label for="lastName" class="control-label">Prénom</label>
+                                    <input id="lastName" th:field="*{lastName}" class="form-control" autocomplete="off">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('gender') ? 'has-error' : ''}">
+                                    <label for="gender" class="control-label">Sexe <span class="required-field">*</span></label>
+                                    <select id="gender" th:field="*{gender}" class="form-control" required>
+                                        <option th:each="gender: ${T(com.estate.domain.enumaration.Gender).values()}" th:value="${gender}" th:text="${gender.name}"></option>
+                                    </select>
+                                    <p th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="help-block"></p>
+                                </div>
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('email') ? 'has-error' : ''}">
+                                    <label for="email" class="control-label">Adresse email <span class="required-field">*</span></label>
+                                    <input id="email" th:field="*{email}" type="email" autocomplete="off" class="form-control" required>
+                                    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="help-block"></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6" style="margin-bottom: 15px" th:classappend="${#fields.hasErrors('phone.number') ? 'has-error' : ''}">
+                                    <label for="phone" class="control-label">Numéro de téléphone <span class="required-field">*</span></label>
+                                    <div class="form-group input-group d-flex mb-0">
+                                        <select th:field="*{phone.code}" style="width: auto" class="form-control" required>
+                                            <option th:each="code : ${countryCodes}" th:value="${code}" th:text="${code}"></option>
+                                        </select>
+                                        <input id="phone" th:field="*{phone.number}" placeholder="695463868" pattern="\d+" autocomplete="off" class="form-control" required>
+                                    </div>
+                                    <p th:if="${#fields.hasErrors('phone.number')}" th:errors="*{phone.number}" class="help-block"></p>
+                                </div>
+                                <div class="col-lg-6" style="margin-bottom: 15px" th:classappend="${#fields.hasErrors('mobile.number') ? 'has-error' : ''}">
+                                    <label for="mobile" class="control-label">Numéro de téléphone secondaire</label>
+                                    <div class="form-group input-group d-flex mb-0">
+                                        <select th:field="*{mobile.code}" style="width: auto" class="form-control" required>
+                                            <option th:each="code : ${countryCodes}" th:value="${code}" th:text="${code}"></option>
+                                        </select>
+                                        <input id="mobile" th:field="*{mobile.number}" placeholder="654762824" pattern="\d+" autocomplete="off" class="form-control">
+                                    </div>
+                                    <p th:if="${#fields.hasErrors('mobile.number')}" th:errors="*{mobile.number}" class="help-block"></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('roles') ? 'has-error' : ''}">
+                                    <label for="user-roles" class="control-label">Rôles <span class="required-field">*</span></label>
+                                    <select id="user-roles" class="form-control searchable-select-box" th:field="*{roles}" multiple required>
+                                        <option th:each="role: ${T(com.estate.domain.enumaration.Role).values()}" th:if="${role.staff}" th:value="${role}" th:text="${role.name}" th:selected="${user?.roles?.contains(role)}"></option>
+                                    </select>
+                                    <p th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}" class="help-block"></p>
+                                </div>
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('modes') ? 'has-error' : ''}">
+                                    <label for="user-modes" class="control-label">En charge des modes de paiement</label>
+                                    <select id="user-modes" class="form-control searchable-select-box" th:field="*{modes}" multiple>
+                                        <option th:each="mode: ${T(com.estate.domain.enumaration.Mode).values()}" th:value="${mode}" th:text="${mode.name}"></option>
+                                    </select>
+                                    <p th:if="${#fields.hasErrors('modes')}" th:errors="*{modes}" class="help-block"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <button type="submit" class="btn btn-primary save-multiple">
+                                <i class="fa fa-save"></i>
+                                &nbsp; Enregistrer et ajouter un autre
+                            </button>
+                            <button type="submit" class="btn btn-success mx-2">
+                                <i class="fa fa-save"></i>
+                                &nbsp; Enregistrer
+                            </button>
+                            <button type="reset" class="btn btn-default">
+                                <i class="fa fa-refresh"></i>
+                                &nbsp; Réinitialiser
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

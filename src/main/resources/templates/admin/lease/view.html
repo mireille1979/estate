@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:insert="base.html :: head(${'Détails du contrat'})"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper" th:object="${lease}">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/lease/list}">Contrats de bail</a></li>
+                <li th:utext="*{'Détails du contrat <b>[ ' + id + ' ]</b>'}"></li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-info-circle fa-fw"></i>
+                        <b>Informations sur le contrat de bail</b>
+                    </div>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <b>Étudiant</b>
+                            <span class="pull-right"><em th:text="*{payment?.student?.user?.name}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Logement</b>
+                            <span class="pull-right"><em th:text="*{housing?.name}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Nombre de mois</b>
+                            <span class="pull-right"><em th:text="*{payment?.months}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Loyer mensuel (FCFA)</b>
+                            <span class="pull-right"><em th:text="${#numbers.formatInteger(lease.payment?.rent, 1, 'WHITESPACE')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Caution (FCFA)</b>
+                            <span class="pull-right"><em th:text="${#numbers.formatInteger(lease.payment?.caution, 1, 'WHITESPACE')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Frais de réhabilitation (FCFA)</b>
+                            <span class="pull-right"><em th:text="${#numbers.formatInteger(lease.payment?.repair, 1, 'WHITESPACE')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Montant total (FCFA)</b>
+                            <span class="pull-right"><em th:text="${#numbers.formatInteger(lease.payment?.amount, 1, 'WHITESPACE')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Date de début</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(startDate, 'dd-MM-yyyy')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Date de fin</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(endDate, 'dd-MM-yyyy')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Actif</b>
+                            <span class="pull-right"><em th:text="${#bools.isTrue(lease.active) ? 'OUI' : 'NON'}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Créé par</b>
+                            <span class="pull-right"><em th:text="*{createdBy}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Date de création</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(creationDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Modifié par</b>
+                            <span class="pull-right"><em th:text="*{lastModifiedBy}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Date de modification</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(lastModifiedDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                    </div>
+                    <div class="panel-footer">
+                        <a th:if="${lease.mutable && T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}" role="button" th:href="@{'/lease/save?id=' + ${lease.id}}" class="btn btn-primary lazy-link mr-3">
+                            <i class="fa fa-pencil-square-o"></i>
+                            &nbsp; Modifier
+                        </a>
+                        <a th:if="${lease.startDate != null}" role="button" th:href="@{'/lease/download/' + ${lease.id}}" class="btn btn-default">
+                            <i class="fa fa-file-pdf-o"></i>
+                            &nbsp; Télécharger
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

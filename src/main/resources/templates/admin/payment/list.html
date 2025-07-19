@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="base.html :: head('Paiements')"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li>Paiements</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col mb-6">
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <button th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}" data-toggle="collapse" data-parent="#accordion" href="#collapseBox" class="collapsed btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                    &nbsp; Rechercher
+                                </button>
+                                <button th:if="${T(com.estate.domain.enumaration.Profil).STUDENT.equals(session?.user?.profil)}" data-toggle="collapse" data-parent="#accordion" href="#collapseBox" class="collapsed btn btn-primary">
+                                    <i class="fa fa-money"></i>
+                                    &nbsp; Moyens de paiement
+                                </button>
+                            </h4>
+                        </div>
+                        <div id="collapseBox" class="panel-collapse collapse">
+                            <div class="panel-body" th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}">
+                                <form th:object="${searchForm}" onsubmit="submitForm(event)" th:action="@{/payment/search}" autocomplete="off" method="post">
+                                    <input th:field="*{page}" type="hidden" id="current-page">
+                                    <div class="row">
+                                        <div class="form-group col-lg-6">
+                                            <label for="operator">Modes de paiement</label>
+                                            <select id="operator" th:field="*{mode}" class="form-control">
+                                                <option value="">Tous les modes...</option>
+                                                <option th:each="mode: ${T(com.estate.domain.enumaration.Mode).values()}" th:value="${mode}" th:text="${mode.name}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="status">Statut</label>
+                                            <select id="status" th:field="*{status}" class="form-control">
+                                                <option value="">Tous les statuts...</option>
+                                                <option th:each="status: ${T(com.estate.domain.enumaration.Status).values()}" th:value="${status}" th:text="${status.name}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="start">A partir du</label>
+                                            <input id="start" name="startDate" th:value="${#calendars.format(searchForm.startDate, 'yyyy-MM-dd')}" type="date" class="form-control">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="end">Jusqu'au</label>
+                                            <input id="end" name="endDate" th:value="${#calendars.format(searchForm.endDate, 'yyyy-MM-dd')}" type="date" class="form-control">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-success mr-2">
+                                        <i class="fa fa-search"></i>
+                                        &nbsp; Lancer la recherche
+                                    </button>
+                                    <button th:href="@{/payment/list}" role="link" class="lazy-link btn btn-default">
+                                        <i class="fa fa-refresh"></i>
+                                        &nbsp; Réinitialiser
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="panel-body p-0" th:if="${T(com.estate.domain.enumaration.Profil).STUDENT.equals(session?.user?.profil)}">
+                                <table class="table table-bordered m-0">
+                                    <tr>
+                                        <th rowspan="2" class="fit-cell-content">Orange Money</th>
+                                        <th class="fit-cell-content">Nom du marchant ou bénéficiaire</th>
+                                        <td th:text="${orangeMerchantCode}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Code marchant ou numéro de téléphone</th>
+                                        <td th:text="${orangeMerchantName}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th rowspan="2">MTN Mobile Money</th>
+                                        <th>Nom du marchant ou bénéficiaire</th>
+                                        <td th:text="${mtnMerchantCode}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Code marchant ou numéro de téléphone</th>
+                                        <td th:text="${mtnMerchantName}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th rowspan="3">Virement bancaire</th>
+                                        <th>Nom de la banque</th>
+                                        <td th:text="${bankName}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Titulaire du compte bancaire</th>
+                                        <td th:text="${bankAccountName}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Numéro de compte bancaire</th>
+                                        <td th:text="${bankAccountNumber}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2">Lien de paiement PayPal</th>
+                                        <td><a th:href="${payPal}" th:text="${payPal}" target="_blank"></a></td>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="2">Paiement en cash</th>
+                                        <td style="text-wrap: auto">Effectuez le versement en espèce auprès du personnel en charge puis utilisez le reçu obtenu comme preuve (faire une photo ou scanner) pour enregistrer votre paiement</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <b><u>NB:</u></b> <span th:text="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil) ? 'Utilisez des critères précis lorsque c''est possible.' : 'Rassurez vous toujours de l''exactitude des informations liées aux moyens de paiement avant de procéder.'}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <button id="add-item" role="link" class="lazy-link d-none" th:href="@{'/payment/save?studentId=' + ${session?.user?.student?.id}}" th:if="${T(com.estate.domain.enumaration.Profil).STUDENT.equals(session?.user?.profil)}"></button>
+                <button id="report-items" role="link" class="lazy-link d-none" th:href="@{/payment/accounting}" th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}"></button>
+                <table id="data-list" data-pdf-title="HISTORIQUE DES PAIEMENTS" data-pdf-name="Historique des paiements" data-columns-left="2" data-columns-right="2" class="table table-bordered paging searching landscape dataTable" th:classappend="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil) ? 'can-report' : 'can-add'}">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}">Étudiant</th>
+                            <th>Montant</th>
+                            <th>Date et heure</th>
+                            <th>Mode</th>
+                            <th>Statut</th>
+                            <th>Vérifié par</th>
+                            <th class="action fit-cell-content">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="payment,iter: ${payments}" th:data-id="${payment.id}">
+                            <td th:text="${startIndex + iter.count}"></td>
+                            <td th:text="${payment.student?.user?.name}" th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}"></td>
+                            <td th:text="${#numbers.formatInteger(payment.amount, 1, 'WHITESPACE')}"></td>
+                            <td th:text="${#temporals.format(payment.creationDate, 'dd-MM-yyyy  HH:mm')}"></td>
+                            <td th:text="${payment.mode?.name}"></td>
+                            <td th:classappend="${payment.status?.background}" th:text="${payment.status?.name}"></td>
+                            <td th:text="${payment.validator?.name}"></td>
+                            <td class="text-center fit-cell-content">
+                                <a class="dropdown-toggle" tabindex="0" data-toggle="popover" data-placement="auto" data-trigger="focus" th:data-target="${'popover-content-' + payment.id}" href="#">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </a>
+                                <div th:id="${'popover-content-' + payment.id}" class="list-group" style="display: none">
+                                    <a th:if="${T(com.estate.domain.enumaration.Status).INITIATED.equals(payment.status)}" class="list-group-item text-decoration-none text-left" th:href="@{'/payment/submit/' + ${payment.id}}">
+                                        <i class="fa fa-send-o fa-fw"></i> Soumettre
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" th:href="@{'/payment/view/' + ${payment.id}}">
+                                        <i class="fa fa-eye fa-fw"></i> Details
+                                    </a>
+                                    <a th:if="${T(com.estate.domain.enumaration.Status).INITIATED.equals(payment.status)}" class="list-group-item text-decoration-none text-left" th:href="@{'/payment/save?id=' + ${payment.id}}">
+                                        <i class="fa fa-pencil-square-o fa-fw"></i> Modifier
+                                    </a>
+                                    <a th:if="${payment.status?.removable}" class="list-group-item text-decoration-none text-danger text-left" th:data-payment-id="${payment.id}" onclick="deleteItem(this.getAttribute('data-payment-id'), 'payment/delete')" href="#">
+                                        <i class="fa fa-trash-o fa-fw"></i> Supprimer
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div th:if="${totalPages > 1}" class="mt-6" id="pagination" th:title="${totalPages}" th:classappend="${search ? 'data-search' : ''}" th:aria-placeholder="${currentPage}" aria-label="payment/list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en">
+
+<head th:replace="base.html :: head('Liste des étudiants')"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li>Étudiants</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col mb-6">
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <button data-toggle="collapse" data-parent="#accordion" href="#collapseBox" class="collapsed btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                    &nbsp; Rechercher
+                                </button>
+                            </h4>
+                        </div>
+                        <div id="collapseBox" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <form th:object="${searchForm}" onsubmit="submitForm(event)" th:action="@{/student/search}" autocomplete="off" method="post">
+                                    <input name="page" type="hidden" id="current-page" th:value="${currentPage}">
+                                    <div class="row">
+                                        <div class="form-group col-lg-6">
+                                            <label for="firstName" class="control-label">Nom</label>
+                                            <input id="firstName" th:field="*{firstName}" class="form-control">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="lastName" class="control-label">Prénom</label>
+                                            <input id="lastName" th:field="*{lastName}" class="form-control">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="provinceId" class="control-label">Logement</label>
+                                            <select id="provinceId" th:field="*{housingId}" class="form-control searchable-select-box">
+                                                <option value="">Toutes les logements ...</option>
+                                                <option th:each="housing: ${housings}" th:value="${housing.id}" th:data-id="${housing.id}" th:text="${housing.name}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="gender" class="control-label">Sexe</label>
+                                            <select id="gender" th:field="*{gender}" class="form-control">
+                                                <option value="">Tous les sexes ...</option>
+                                                <option th:each="gender: ${T(com.estate.domain.enumaration.Gender).values()}" th:value="${gender}" th:text="${gender.name}"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" id="search-button-id" class="btn btn-success mr-2">
+                                        <i class="fa fa-search"></i>
+                                        &nbsp; Lancer la recherche
+                                    </button>
+                                    <button th:href="@{/student/list}" role="link" class="lazy-link btn btn-default">
+                                        <i class="fa fa-refresh"></i>
+                                        &nbsp; Réinitialiser
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <b><u>NB:</u></b> &nbsp; Utilisez des critères précis lorsque c'est possible.
+                        </div>
+                    </div>
+                </div>
+                <button id="add-item" role="link" class="lazy-link d-none" th:href="@{/student/save}"></button>
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <table id="data-list" data-pdf-title="LISTE DES ÉTUDIANTS" data-pdf-name="Liste des étudiants" class="table table-striped table-bordered table-hover dataTable paging searching can-add">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Nom(s) et Prénom(s)</th>
+                            <th>Sexe</th>
+                            <th>Adresse e-mail</th>
+                            <th>Téléphone(s)</th>
+                            <th>Logement</th>
+                            <th class="action fit-cell-content">Statut</th>
+                            <th class="action fit-cell-content">Date de création</th>
+                            <th class="action fit-cell-content">Date de modification</th>
+                            <th class="action fit-cell-content">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="student,iter: ${students}" th:data-id="${student.id}">
+                            <td th:text="${startIndex + iter.count}"></td>
+                            <td th:text="${student.user?.name}"></td>
+                            <td th:text="${student.user?.gender.name}"></td>
+                            <td th:text="${student.user?.email}"></td>
+                            <td>
+                                <span th:text="${student.user?.phone}"></span><br>
+                                <span th:text="${student.user?.mobile}"></span>
+                            </td>
+                            <td th:text="${student.housing?.name}"></td>
+                            <td th:text="${student.user?.active ? 'ACTIF' : 'DÉSACTIVÉ'}"></td>
+                            <td th:text="${#temporals.format(student.creationDate, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td th:text="${#temporals.format(student.lastModifiedDate, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td class="fit-cell-content text-center">
+                                <a class="dropdown-toggle" tabindex="0" data-toggle="popover" data-placement="auto" data-trigger="focus" th:data-target="${'popover-content-' + student.id}" href="#">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </a>
+                                <div th:id="${'popover-content-' + student.id}" class="list-group" style="display: none">
+                                    <a class="list-group-item lazy-link text-decoration-none text-left" th:href="@{'/student/view/' + ${student.id}}">
+                                        <i class="fa fa-fw fa-eye"></i> Détails
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" th:if="${student.currentLease == null || student.currentLease.nextLease == null}" th:href="@{'/payment/save?studentId=' + ${student.id}}">
+                                        <i class="fa fa-fw fa-money"></i> Payer
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" th:href="@{'/student/save?id=' + ${student.id}}">
+                                        <i class="fa fa-fw fa-pencil-square-o"></i> Modifier
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" th:href="@{'/student/toggle/' + ${student.id}}">
+                                        <i class="fa fa-fw" th:classappend="${student.user?.active ? 'fa-toggle-off' : 'fa-toggle-on'}"></i> <span th:text="${student.user?.active ? 'Désactiver' : 'Activer'}"></span>
+                                    </a>
+                                    <a sec:authorize="hasRole('ADMIN')" class="list-group-item text-decoration-none text-left text-danger" th:data-student-id="${student.id}" onclick="deleteItem(this.getAttribute('data-student-id'), 'student/delete')" href="#">
+                                        <i class="fa fa-fw fa-trash-o"></i> Supprimer
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div th:if="${totalPages > 1}" class="mt-6" th:classappend="${search ? 'data-search' : ''}" id="pagination" th:title="${totalPages}" th:aria-placeholder="${currentPage}" aria-label="student/list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+</body>
+
+</html>

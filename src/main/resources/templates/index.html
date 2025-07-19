@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>MINI CITÉ CONCORDE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <!-- External CSS libraries -->
+    <link type="text/css" rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/assets/css/slick.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/assets/css/animate.min.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/assets/css/js-snackbar.min.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/assets/fonts/font-awesome/css/font-awesome.min.css}">
+    <link type="text/css" rel="stylesheet" th:href="@{/assets/fonts/flaticon/font/flaticon.css}">
+
+    <!-- Favicon icon -->
+    <link rel="shortcut icon" th:href="@{/images/favicon.png}" type="image/x-icon" >
+    <!-- Custom Stylesheet -->
+    <link type="text/css" rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" type="text/css" id="style_sheet" th:href="@{/assets/css/skins/default.css}">
+</head>
+<body id="top">
+<div class="page_loader"></div>
+
+<!-- main header start -->
+<header class="main-header sticky-header header-with-top" id="main-header-2">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="navbar navbar-expand-lg navbar-light rounded">
+                    <a class="navbar-brand logo navbar-brand d-flex mr-auto" th:href="@{/}">
+                        <img th:href="@{/assets/img/logo.png}" alt="logo">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="fa fa-bars"></span>
+                    </button>
+                    <div class="navbar-collapse collapse w-100" id="navbar">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link single" href="#top">Accueil</a>
+                            </li>
+                            <li class="nav-item" th:unless="${#lists.isEmpty(housings)}">
+                                <a class="nav-link single" href="#featured-property">Logements</a>
+                            </li>
+                            <li class="nav-item" th:unless="${#lists.isEmpty(standings)}">
+                                <a class="nav-link single" href="#pricing">Prix</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link single" href="#contact">Contact</a>
+                            </li>
+                            <li class="nav-item call">
+                                <a class="nav-link single" href="#"><i class="flaticon-headset"></i> <span th:text="${telephone}"></span></a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- main header end -->
+
+<!-- Banner start -->
+<div class="banner" id="banner">
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active item-bg banner-max-height">
+                <img class="d-block w-100 h-100" th:src="@{/assets/img/banner/img-1.jpg}" alt="banner">
+                <div class="carousel-caption banner-slider-inner d-flex h-100">
+                    <div class="carousel-content container">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-12 align-self-center">
+                                <div class="text-l">
+                                    <h1>Trouver un logement étudiant en un clic</h1>
+                                    <p class="text-justify">Nous offrons une expérience de vie étudiante exceptionnelle à la <b>MINI CITÉ CONCORDE</b>. Nos logements sont sécurisés, confortables et équipés de tout le nécessaire pour votre bien-être. Profitez d'un environnement calme et studieux, idéal pour réussir vos études.</p>
+                                    <a href="#pricing" class="btn btn-color btn-md r-btn">En savoir plus</a>
+                                </div>
+                                <div class="contact-from cf-2 cf-3">
+                                    <form th:object="${visitor}" th:action="@{/subscribe}" method="post">
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-6 pad-10">
+                                                <div class="form-group name">
+                                                    <input type="text" th:field="*{name}" class="form-control" placeholder="Nom">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-6 pad-10">
+                                                <div class="form-group email">
+                                                    <input type="email" th:field="*{email}" class="form-control" placeholder="Adresse e-mail">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-6 pad-10">
+                                                <div class="form-group subject">
+                                                    <input type="text" th:field="*{phone}" class="form-control" placeholder="Numéro de téléphone">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-6 pad-10">
+                                                <div class="send-btn text-center">
+                                                    <button type="submit" class="btn btn-color btn-md btn-block">Souscrire</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12 cf-4">
+                                <div class="contact-from">
+                                    <h3>Recevoir des notifications pour les logements disponibles.</h3>
+                                    <form th:object="${visitor}" th:action="@{/subscribe}" method="post">
+                                        <div class="form-group" th:classappend="${#fields.hasErrors('name') ? 'has-error' : ''}">
+                                            <input th:field="*{name}" class="form-control" placeholder="Nom" autocomplete="off" required>
+                                        </div>
+                                        <div class="form-group" th:classappend="${#fields.hasErrors('email') ? 'has-error' : ''}">
+                                            <input type="email" th:field="*{email}" class="form-control" placeholder="Adresse e-mail" autocomplete="off" required>
+                                        </div>
+                                        <div class="form-group" th:classappend="${#fields.hasErrors('phone') ? 'has-error' : ''}">
+                                            <input th:field="*{phone}" class="form-control" placeholder="Numéro de téléphone" autocomplete="off" required>
+                                        </div>
+                                        <div class="send-btn text-center">
+                                            <button type="submit" class="btn btn-color btn-md btn-block">Souscrire</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- banner end -->
+
+<!-- Why choose us start -->
+<div class="why-choose-us">
+    <div class="container">
+        <div class="why-choose-us-inner">
+            <div class="row">
+                <div class="col-lg-4 col-md-4 border-r wow_ fadeInLeft delay-04s">
+                    <div class="media service-info-2">
+                        <div class="media-left">
+                            <i class="flaticon-empire-state-building"></i>
+                        </div>
+                        <div class="media-body">
+                            <h4>Logements Spacieux</h4>
+                            <p>Espace et confort pour votre bien-être</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 border-r wow_ fadeInUp delay-04s">
+                    <div class="media service-info-2">
+                        <div class="media-left">
+                            <i class="flaticon-sale"></i>
+                        </div>
+                        <div class="media-body">
+                            <h4>Bons Prix</h4>
+                            <p>Tarifs abordables pour tous les budgets</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 wow_ fadeInRight delay-04s">
+                    <div class="media service-info-2">
+                        <div class="media-left">
+                            <i class="flaticon-sport-team"></i>
+                        </div>
+                        <div class="media-body">
+                            <h4>Service Client</h4>
+                            <p>Votre satisfaction est notre priorité</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Why choose us end -->
+
+<!-- Featured property start -->
+<div th:unless="${#lists.isEmpty(housings)}" class="featured-property content-area content-area" id="featured-property">
+    <div class="container">
+        <div class="main-title wow_ fadeInDown delay-04s">
+            <h1>Nos logements</h1>
+            <p>Découvrez nos logements. Nous mettons à jour régulièrement nos disponibilités</p>
+        </div>
+        <div class="slick-slider-area">
+            <div class="row slick-carousel" data-slick='{"slidesToShow": 3, "responsive":[{"breakpoint": 1024,"settings":{"slidesToShow": 2}}, {"breakpoint": 768,"settings":{"slidesToShow": 1}}]}'>
+                <div th:each="housing : ${housings}" class="slick-slide-item">
+                    <div class="property-box">
+                        <div class="photo">
+                            <a href="#" onclick="return false">
+                                <img th:src="@{'/explorer/' + ${housing.standing?.picture}}" onerror="this.src='assets/img/property-1.jpg'" alt="property" class="img-fluid">
+                                <div class="tag" th:text="${#bools.isTrue(housing.available) ? 'Disponible' : 'Occupé'}"></div>
+                                <div class="love"><i class="flaticon-heart"></i></div>
+                                <div class="plan-price" th:utext="${#numbers.formatInteger(housing.standing?.rent, 1, 'WHITESPACE') + '<sup>FCFA</sup><span> / mois</span>'}"></div>
+                            </a>
+                        </div>
+                        <div class="detail clearfix">
+                            <div class="float-left">
+                                <h3 th:text="${housing.category?.name + ' ' + housing.name}"></h3>
+                                <div class="location">
+                                    <span th:text="${housing.standing?.name}"></span> STANDING
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slick-prev slick-arrow-buton clip-home">
+                <i class="fa fa-angle-left"></i>
+            </div>
+            <div class="slick-next slick-arrow-buton clip-home">
+                <i class="fa fa-angle-right"></i>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Featured property end -->
+
+<!-- Pricing tables start -->
+<div th:unless="${#lists.isEmpty(standings)}" class="pricing-tables content-area bg-grea" id="pricing">
+    <div class="container">
+        <!-- Main title -->
+        <div class="main-title wow_ fadeInDown delay-04s">
+            <h1>Nos Prix</h1>
+            <p class="text-justify">Découvrez nos offres de logement à prix abordable. Nous exigeons une caution et des frais de réhabilitation pour les nouveaux résidents, payable lors de la signature du contrat de location pour la première année. La caution est remboursable lors de la libération du logement après avoir fait un état des lieux. Les frais de réhabilitation prélevés sont destinés aux travaux de réparations (peinture, plomberie, etc...)</p>
+        </div>
+        <div class="row">
+            <div th:each="standing: ${standings}" class="col-xl-4 col-lg-4 col-md-12 wow_ fadeInLeft delay-04s">
+                <div class="pricing-1 plan">
+                    <div class="plan-header">
+                        <h5 th:text="${standing.name + ' STANDING'}"></h5>
+                        <p>Paiement annuel uniquement</p>
+                        <div class="plan-price" th:utext="${#numbers.formatInteger(standing.rent, 1, 'WHITESPACE') + '<span><sup>FCFA</sup>/ mois</span>'}"></div>
+                    </div>
+                    <div class="plan-list">
+                        <ul>
+                            <li><i class="fa fa-star"></i>Caution <span style="float: right; font-weight: bold" th:text="${#numbers.formatInteger(standing.caution, 1, 'WHITESPACE') + ' FCFA'}"></span></li>
+                            <li><i class="fa fa-star"></i>Réhabilitation <span style="float: right; font-weight: bold" th:text="${#numbers.formatInteger(standing.repair, 1, 'WHITESPACE') + ' FCFA'}"></span></li>
+                            <li style="line-height: 30px; text-align: justify"><i class="fa fa-star"></i><span th:text="${standing.description}"></span></li>
+                        </ul>
+                        <div class="plan-button text-center">
+                            <a target="_blank" th:href="@{'/explorer/' + ${standing.picture}}" th:classappend="${#strings.isEmpty(standing.picture) ? 'disabled' : ''}" class="btn btn-outline pricing-btn">Voir</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Pricing tables end -->
+<!-- Contact start -->
+<div class="contact content-area-2" id="contact">
+    <div class="container">
+        <div class="main-title wow_ fadeInDown delay-04s">
+            <h1>Contactez-Nous</h1>
+            <p>Vous avez une question ou une demande spécifique ? Utilisez notre formulaire de contact pour nous joindre.</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-7 wow_ fadeInLeft delay-04s">
+                <form method="post" th:object="${contact}" th:action="@{/contact}" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <input type="text" th:field="*{name}" class="form-control" placeholder="Nom" autocomplete="off" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <input type="email" th:field="*{email}" class="form-control" placeholder="Adresse e-mail" autocomplete="off" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <input type="text" th:field="*{subject}" class="form-control" placeholder="Objet" autocomplete="off" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <input type="text" th:field="*{phone}" class="form-control" placeholder="Numéro de téléphone" autocomplete="off" required>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <textarea class="form-control" th:field="*{message}" placeholder="Écrire un message" autocomplete="off" required></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="send-btn text-center">
+                                <button type="submit" class="btn btn-color btn-md btn-message">Envoyer</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-5 wow_ fadeInRight delay-04s">
+                <div class="contact-info">
+                    <div class="media mb-25">
+                        <i class="flaticon-phone"></i>
+                        <div class="media-body">
+                            <h5>Téléphone</h5>
+                            <p><a th:href="${'tel:' + telephone}" th:text="${telephone}"></a></p>
+                        </div>
+                    </div>
+                    <div class="media mb-25">
+                        <i class="fa fa-whatsapp"></i>
+                        <div class="media-body">
+                            <h5>Whatsapp</h5>
+                            <p><a th:href="${'tel:' + whatsapp}" th:text="${whatsapp}"></a></p>
+                        </div>
+                    </div>
+                    <div class="media mb-25">
+                        <i class="flaticon-mail"></i>
+                        <div class="media-body">
+                            <h5>Adresse e-mail</h5>
+                            <p><a th:href="${'mailto:' + email}" th:text="${email}"></a></p>
+                        </div>
+                    </div>
+                    <div class="media mb-0">
+                        <i class="flaticon-pin-1"></i>
+                        <div class="media-body">
+                            <h5>Localisation</h5>
+                            <p><a href="#">Cradat, Yaoundé, Centre - Cameroun</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Contact end -->
+
+<!-- Footer start -->
+<div class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <p>© MINI CITÉ CONCORDE - 2024. Tous droits réservés.</p>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <ul class="social-list clearfix">
+                    <li><a href="#" class="facebook"><i class="fa fa-facebook"></i></a></li>
+                    <li><a href="#" class="twitter"><i class="fa fa-twitter"></i></a></li>
+                    <li><a href="#" class="google"><i class="fa fa-google-plus"></i></a></li>
+                    <li><a href="#" class="linkedin"><i class="fa fa-linkedin"></i></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer end -->
+
+<!-- External JS libraries -->
+<script th:src="@{/assets/js/jquery.min.js}"></script>
+<!--
+<script th:src="@{/assets/js/popper.min.js}"></script>
+-->
+<script th:src="@{/assets/js/bootstrap.min.js}"></script>
+<script th:src="@{/assets/js/js-snackbar.min.js}"></script>
+
+<script th:src="@{/assets/js/slick.min.js}"></script>
+<script th:src="@{/assets/js/jquery.filterizr.js}"></script>
+<script th:src="@{/assets/js/wow.min.js}"></script>
+
+<script th:src="@{/assets/js/jquery.scrollUp.js}"></script>
+
+<script th:src="@{/assets/js/typed.min.js}"></script>
+<script th:src="@{/assets/js/ie-emulation-modes-warning.js}"></script>
+<!-- Custom JS Script -->
+<script th:src="@{/assets/js/app.js}"></script>
+<!--/*@thymesVar id="notification" type="com.estate.domain.entity.Notification"*/-->
+<script th:if="${notification}" th:inline="javascript">
+    new SnackBar({
+        message: /*[[${notification?.message}]]*/ '',
+        status: /*[[${notification?.hasError() ? 'error' : 'success'}]]*/ '',
+        dismissible: false,
+        position: 'bc',
+        fixed: true,
+        timeout: 6000,
+    });
+</script>
+</body>
+</html>

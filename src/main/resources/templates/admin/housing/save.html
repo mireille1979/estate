@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:insert="base.html :: head(${#strings.isEmpty(housing.id) ? 'Nouveau logement' : 'Modification du logement'})"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/housing/list}">Liste des logements</a></li>
+                <li th:text="${#strings.isEmpty(housing.id) ? 'Nouveau logement' : 'Modification du logement'}"></li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <b>Formulaire : </b> <span style="font-size: 13px">Les champs avec l'astérisque ( <span class="required-field">*</span> ) sont obligatoires</span>
+                    </div>
+                    <form th:object="${housing}" onsubmit="submitMultipartForm(event)" th:action="@{/housing/save}" autocomplete="off" enctype="multipart/form-data" method="post">
+                        <div class="panel-body">
+                            <input name="id" th:value="${housing?.id}" type="hidden">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group" th:classappend="${#fields.hasErrors('name') ? 'has-error' : ''}">
+                                        <label for="name" class="control-label">Nom <span class="required-field">*</span></label>
+                                        <input id="name" th:field="*{name}" class="form-control" required>
+                                        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="help-block"></p>
+                                    </div>
+                                    <div class="form-group" th:classappend="${#fields.hasErrors('standingId') ? 'has-error' : ''}">
+                                        <label for="standingId" class="control-label">Standing <span class="required-field">*</span></label>
+                                        <select id="standingId" th:field="*{standingId}" class="form-control" required>
+                                            <option th:each="standing: ${standings}" th:value="${standing.id}" th:text="${standing.name}"></option>
+                                        </select>
+                                        <p th:if="${#fields.hasErrors('standingId')}" th:errors="*{standingId}" class="help-block"></p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="category" class="control-label">Catégorie <span class="required-field">*</span></label>
+                                        <select id="category" th:field="*{category}" class="form-control" required>
+                                            <option th:each="category: ${T(com.estate.domain.enumaration.Category).values()}" th:value="${category}" th:text="${category.name}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="available" class="control-label">Statut <span class="required-field">*</span></label>
+                                        <select id="available" th:field="*{available}" class="form-control" required>
+                                            <option value="true">Disponible</option>
+                                            <option value="false">Occupé</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <button type="submit" class="btn btn-primary save-multiple">
+                                <i class="fa fa-save"></i>
+                                &nbsp; Enregistrer et ajouter un autre
+                            </button>
+                            <button type="submit" class="btn btn-success mx-2">
+                                <i class="fa fa-save"></i>
+                                &nbsp; Enregistrer
+                            </button>
+                            <button type="reset" class="btn btn-default">
+                                <i class="fa fa-refresh"></i>
+                                &nbsp; Réinitialiser
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

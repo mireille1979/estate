@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="300">
+    <title>MINI CITÉ CONCORDE | Mot de passe oublié</title>
+    <link rel="icon" type="image/x-ico" th:href="@{/images/logo.png}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <link th:href="@{/css/font-awesome.css}" rel="stylesheet">
+    <link th:href="@{/css/sb-admin.css}" rel="stylesheet">
+</head>
+<body id="login-background" class="h-100vh p-0 d-flex flex-column justify-content-center">
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="panel panel-default">
+                <div class="panel-heading py-0 d-flex align-items-center justify-content-space-between">
+                    <div class="d-flex align-items-center">
+                        <img class="fa fa-fw" tabindex="-1" th:src="@{/images/favicon.png}" alt="">
+                        <h5 class="ml-2"><b>Réinitialiser le mot de passe</b></h5>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mt-6 mb-3">
+                    <a th:href="@{/237in}" tabindex="-1">
+                        <img width="100" tabindex="-1" th:src="@{/images/logo.png}" alt="">
+                    </a>
+                </div>
+                <form method="post" autocomplete="off" onsubmit="confirmPassword(event)" th:action="@{/password/renew}">
+                    <input type="hidden" name="token" th:value="${token}">
+                    <div class="panel-body">
+                        <div class="form-group my-4">
+                            <label class="form-control-label" for="password">Nouveau mot de passe <span class="required-field">*</span></label>
+                            <input name="password" type="password" id="password" class="form-control form-control-lg" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-control-label" for="confirm">Confirmer le mot de passe <span class="required-field">*</span></label>
+                            <input type="password" id="confirm" class="form-control form-control-lg" required>
+                        </div>
+                        <a style="float: right" th:href="@{/237in}">Se connecter</a>
+                    </div>
+                    <div class="panel-footer">
+                        <button class="btn btn-success btn-lg btn-block" type="submit">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/jquery.metisMenu.js}"></script>
+<script th:src="@{/js/sb-admin.js}"></script>
+<script>
+    function confirmPassword(event){
+        let password = document.getElementById("password").value;
+        let confirmation = document.getElementById("confirm").value;
+        if(password !== confirmation){
+            alert("Le mot de passe de confirmation est incorrect");
+            event.preventDefault();
+        }
+    }
+</script>
+</body>
+</html>
+

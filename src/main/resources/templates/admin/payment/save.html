@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:insert="base.html :: head(${#strings.isEmpty(payment.id) ? 'Nouveau paiement' : 'Modification du paiement'})"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/payment/list}">Paiements</a></li>
+                <li th:text="${#strings.isEmpty(payment.id) ? 'Nouveau paiement' : 'Modification du paiement'}"></li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <b>Formulaire</b>
+                    </div>
+                    <form th:object="${payment}" onsubmit="submitMultipartForm(event)" th:action="@{/payment/save}" enctype="multipart/form-data" autocomplete="off" method="post">
+                        <div class="panel-body">
+                            <input th:field="*{id}" type="hidden">
+                            <input th:field="*{studentId}" type="hidden">
+                            <input th:if="${student?.housing != null}" th:field="*{standingId}" type="hidden">
+                            <input th:if="${student?.housing != null}" th:field="*{desiderataId}" type="hidden">
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label class="control-label" for="student">Étudiant <span class="required-field">*</span></label>
+                                    <input id="student" class="form-control" th:value="${student?.user?.name}" autocomplete="off" readonly required>
+                                </div>
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('months') ? 'has-error' : ''}">
+                                    <label class="control-label" for="months">Durée (en mois) <span class="required-field">*</span></label>
+                                    <input id="months" type="number" min="12" step="12" th:field="*{months}" class="form-control" autocomplete="off" readonly required>
+                                    <p th:if="${#fields.hasErrors('months')}" th:errors="*{months}" class="help-block"></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('standingId') ? 'has-error' : ''}">
+                                    <label for="standingId" class="control-label">Standing <span class="required-field">*</span></label>
+                                    <select id="standingId" th:field="*{standingId}" class="form-control searchable-select-box" th:data-id="*{id}" th:data-student-id="*{studentId}" onchange="toggleStanding(this.getAttribute('data-id'), this.getAttribute('data-student-id'), event.target.value, 'payment/save')" th:disabled="${student?.housing != null}" required>
+                                        <option th:each="standing: ${standings}" th:value="${standing.id}" th:text="${standing.name}"></option>
+                                    </select>
+                                    <p th:if="${#fields.hasErrors('standingId')}" th:errors="*{standingId}" class="help-block"></p>
+                                </div>
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('desiderataId') ? 'has-error' : ''}">
+                                    <label for="desiderataId" class="control-label">Logement <span class="required-field">*</span></label>
+                                    <select id="desiderataId" th:field="*{desiderataId}" class="form-control searchable-select-box" th:disabled="${student?.housing != null}" required>
+                                        <option th:each="housing: ${housings}" th:value="${!housing.available && housing.resident?.id != student?.id ? '' : housing.id}" th:text="${housing.name + ' (' + (housing.available ? 'Disponible' : 'Occupé') + ')'}" th:disabled="${!housing.available && housing.resident?.id != student?.id}"></option>
+                                    </select>
+                                    <p th:if="${#fields.hasErrors('desiderataId')}" th:errors="*{desiderataId}" class="help-block"></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <label class="control-label" for="rent"> Loyer mensuel <span class="required-field">*</span></label>
+                                        <input id="rent" type="number" min="0" th:field="*{rent}" class="form-control" autocomplete="off" readonly required>
+                                        <span class="input-group-addon">FCFA</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <label class="control-label" for="caution"> Caution <span class="required-field">*</span></label>
+                                        <input id="caution" type="number" min="0" th:field="*{caution}" class="form-control" autocomplete="off" readonly required>
+                                        <span class="input-group-addon">FCFA</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <label class="control-label" for="repair"> Frais de réhabilitation <span class="required-field">*</span></label>
+                                        <input id="repair" type="number" min="0" th:field="*{repair}" class="form-control" autocomplete="off" readonly required>
+                                        <span class="input-group-addon">FCFA</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group input-group">
+                                        <label class="control-label" for="amount"> Montant total [<i>durée x mensualité + caution + frais de réhabilitation</i>] <span class="required-field">*</span></label>
+                                        <input id="amount" type="number" min="0" th:value="*{amount}" class="form-control" autocomplete="off" readonly required>
+                                        <span class="input-group-addon">FCFA</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label for="mode" class="control-label">Mode de paiement <span class="required-field">*</span></label>
+                                    <select id="mode" th:field="*{mode}" class="form-control searchable-select-box" required>
+                                        <option th:each="mode: ${T(com.estate.domain.enumaration.Mode).values()}" th:value="${mode}" th:text="${mode.name}"></option>
+                                    </select>
+                                    <p th:if="${#fields.hasErrors('mode')}" th:errors="*{mode}" class="help-block"></p>
+                                </div>
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('proofFile') ? 'has-error' : ''}">
+                                    <label class="control-label" for="proofFile">Preuve de paiement <span th:if="${#strings.isEmpty(payment.id)}" class="required-field">*</span></label>
+                                    <input id="proofFile" type="file" accept="application/pdf, image/png, image/jpg, image/jpeg" th:field="*{proofFile}" th:required="${#strings.isEmpty(payment.id)}" class="form-control" autocomplete="off">
+                                    <p th:if="${#fields.hasErrors('proofFile')}" th:errors="*{proofFile}" class="help-block"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <button type="submit" class="btn btn-success mr-2">
+                                <i class="fa fa-save"></i>
+                                &nbsp; Enregistrer
+                            </button>
+                            <button type="reset" class="btn btn-default">
+                                <i class="fa fa-refresh"></i>
+                                &nbsp; Réinitialiser
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

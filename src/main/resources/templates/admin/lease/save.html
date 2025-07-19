@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:insert="base.html :: head('Modification du contrat de bail')"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/lease/list}">Contrats de bail</a></li>
+                <li>Modification du contrat</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <b>Formulaire : </b> <span style="font-size: 13px">Les champs avec l'astérisque ( <span class="required-field">*</span> ) sont obligatoires</span>
+                    </div>
+                    <form th:object="${mutation}" onsubmit="submitForm(event)" th:action="@{/lease/save}" autocomplete="off" method="post">
+                        <div class="panel-body">
+                            <input th:field="*{leaseId}" type="hidden">
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label class="control-label" for="student">Étudiant</label>
+                                    <input id="student" class="form-control" th:value="${lease.payment?.student?.user?.name}" autocomplete="off" readonly>
+                                </div>
+                                <div class="form-group col-lg-6" th:classappend="${#fields.hasErrors('housingId') ? 'has-error' : ''}">
+                                    <label for="housingId" class="control-label">Logement <span class="required-field">*</span></label>
+                                    <select id="housingId" th:field="*{housingId}" class="form-control searchable-select-box" required>
+                                        <option th:if="${lease.housing?.id != null}" th:value="${lease.housing?.id}" th:text="${lease.housing?.name}"></option>
+                                        <option th:each="housing: ${housings}" th:value="${housing.id}" th:text="${housing.name}"></option>
+                                    </select>
+                                    <p th:if="${#fields.hasErrors('housingId')}" th:errors="*{housingId}" class="help-block"></p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <label class="control-label" for="startDate">Date de début <span class="required-field">*</span></label>
+                                    <input id="startDate" th:field="*{startDate}" type="date" class="form-control" autocomplete="off" required>
+                                </div>
+                                <div class="form-group col-lg-6">
+                                    <label class="control-label" for="months">Durée (en mois)</label>
+                                    <input id="months" type="number" th:value="${lease.payment?.months}" class="form-control" autocomplete="off" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <button type="submit" class="btn btn-success mr-2">
+                                <i class="fa fa-save"></i>
+                                &nbsp; Enregistrer
+                            </button>
+                            <button type="reset" class="btn btn-default">
+                                <i class="fa fa-refresh"></i>
+                                &nbsp; Réinitialiser
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

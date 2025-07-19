@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:insert="base.html :: head(${'Détails du paiement'})"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper" th:object="${payment}">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/payment/list}">Paiements</a></li>
+                <li>Détails du paiement</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-info-circle fa-fw"></i>
+                        <b>Informations sur le paiement</b>
+                    </div>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <b>Étudiant</b>
+                            <span class="pull-right"><em th:text="*{student?.user?.name}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Mode de paiement</b>
+                            <span class="pull-right"><em th:text="*{mode.name}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Montant</b>
+                            <span class="pull-right"><em th:text="${#numbers.formatInteger(payment.amount, 1, 'WHITESPACE')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Statut</b>
+                            <span class="pull-right"><em th:text="*{status?.name}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Commentaire</b>
+                            <span class="pull-right"><em th:text="*{comment}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Vérifié par</b>
+                            <span class="pull-right"><em th:text="*{validator?.name}"></em></span>
+                        </a>
+                        <div class="list-group-item">
+                            <b>Preuve de paiement</b>
+                            <span class="pull-right">
+                                <em><a target="_blank" th:href="@{'/explorer/' + ${payment.proof}}">Voir</a></em>
+                            </span>
+                        </div>
+                        <div class="list-group-item">
+                            <b>Créé par</b>
+                            <span class="pull-right"><em th:text="*{createdBy}"></em></span>
+                        </div>
+                        <a href="#" class="list-group-item">
+                            <b>Date de paiement</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(creationDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                        <div class="list-group-item">
+                            <b>Modifié par</b>
+                            <span class="pull-right"><em th:text="*{lastModifiedBy}"></em></span>
+                        </div>
+                        <a href="#" class="list-group-item">
+                            <b>Date de modification</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(creationDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                    </div>
+                    <div th:if="${T(com.estate.domain.enumaration.Status).INITIATED.equals(payment.status)}" class="panel-footer">
+                        <a role="button" th:href="@{'/payment/submit/' + ${payment.id}}" class="btn btn-success lazy-link mr-3">
+                            <i class="fa fa-send-o"></i>
+                            &nbsp; Soumettre
+                        </a>
+                        <a role="button" th:href="@{'/payment/save?id=' + ${payment.id}}" class="btn btn-default lazy-link">
+                            <i class="fa fa-pencil-square-o"></i>
+                            &nbsp; Modifier
+                        </a>
+                    </div>
+                    <div th:if="${T(com.estate.domain.enumaration.Status).SUBMITTED.equals(payment.status)}" class="panel-footer">
+                        <a role="button" th:href="@{'/payment/validate/' + ${payment.id}}" class="btn btn-success lazy-link mr-3">
+                            <i class="fa fa-check"></i>
+                            &nbsp; Valider
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${T(com.estate.domain.enumaration.Status).SUBMITTED.equals(payment.status)}" class="row">
+            <div class="col">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-bars fa-fw"></i>
+                        <b>Intention de rejet</b>
+                    </div>
+                    <form th:object="${reject}" onsubmit="return submitForm(event)" th:action="@{/payment/cancel}" autocomplete="off" method="post">
+                        <div class="panel-body">
+                            <div class="row">
+                                <input th:field="*{id}" type="hidden">
+                                <div class="form-group col-lg-12" th:classappend="${#fields.hasErrors('comment') ? 'has-error' : ''}">
+                                    <label class="control-label" for="comment">Motif du rejet <span class="required-field">*</span></label>
+                                    <textarea id="comment" th:field="*{comment}" class="form-control" autocomplete="off" required></textarea>
+                                    <p th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}" class="help-block"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <button type="submit" class="btn btn-danger mr-3">
+                                <i class="fa fa-close"></i>
+                                &nbsp; Rejéter
+                            </button>
+                            <button type="reset" class="btn btn-default">
+                                <i class="fa fa-refresh"></i>
+                                &nbsp; Réinitialiser
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

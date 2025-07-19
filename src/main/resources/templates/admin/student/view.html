@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="base.html :: head(${'Détails de l''étudiant'})"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper" th:object="${student}">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/student/list}">Étudiants</a></li>
+                <li>Informations de l'étudiant</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-info-circle fa-fw"></i>
+                        <b>Informations sur l'étudiant</b>
+                    </div>
+                    <div class="list-group">
+                        <a class="list-group-item" href="#">
+                            <b>Nom</b>
+                            <span class="pull-right"><em th:text="*{user.firstName}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Prénom</b>
+                            <span class="pull-right"><em th:text="*{user.lastName}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Date de naissance</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(dateOfBirth, 'dd-MM-yyyy')}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Lieu de naissance</b>
+                            <span class="pull-right"><em th:text="*{placeOfBirth}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Sexe</b>
+                            <span class="pull-right"><em th:text="*{user.gender.name}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Numéro de la CNI</b>
+                            <span class="pull-right"><em th:text="*{cniNumber}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Logement</b>
+                            <span class="pull-right"><em th:text="*{housing?.name}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Statut</b>
+                            <span class="pull-right"><em th:text="${student.user?.active ? 'ACTIF' : 'DÉSACTIVÉ'}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Nom de l'établissement fréquenté</b>
+                            <span class="pull-right"><em th:text="*{school}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Spécialité(s)</b>
+                            <span class="pull-right"><em th:text="*{specialities}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Niveau</b>
+                            <span class="pull-right"><em th:text="*{grade?.name}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Matricule</b>
+                            <span class="pull-right"><em th:text="*{matricule}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Téléphone(s)</b>
+                            <span class="pull-right"><em th:text="*{user.phone}"></em><em th:if="${student.user?.mobile != null}" th:text="${' / ' + student.user.mobile}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Adresse e-mail</b>
+                            <span class="pull-right"><em th:text="*{user.email}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Créé par</b>
+                            <span class="pull-right"><em th:text="*{createdBy}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Date d'inscription</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(creationDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Modifié par</b>
+                            <span class="pull-right"><em th:text="*{lastModifiedBy}"></em></span>
+                        </a>
+                        <a class="list-group-item" href="#">
+                            <b>Date de modification</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(lastModifiedDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                    </div>
+                    <div class="panel-footer">
+                        <a role="button" th:href="@{/student/save}" class="btn btn-success lazy-link mr-3">
+                            <i class="fa fa-plus-circle"></i>
+                            &nbsp; Ajouter
+                        </a>
+                        <a role="button" th:href="@{'/student/save?id=' + ${student.id}}" class="btn btn-primary lazy-link">
+                            <i class="fa fa-pencil-square-o"></i>
+                            &nbsp; Modifier
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th class="fit-cell-content">Contacts</th>
+                    <th colspan="2" th:text="*{firstParentRelation.name}"></th>
+                    <th colspan="2" th:text="*{secondParentRelation.name}"></th>
+                </tr>
+                <tr>
+                    <th>Nom</th>
+                    <td colspan="2" th:text="*{firstParentName}"></td>
+                    <td colspan="2" th:text="*{secondParentName}"></td>
+                </tr>
+                <tr>
+                    <th>Lieu de résidence</th>
+                    <td colspan="2" th:text="*{firstParentAddress}"></td>
+                    <td colspan="2" th:text="*{secondParentAddress}"></td>
+                </tr>
+                <tr>
+                    <th>Téléphone(s)</th>
+                    <td th:colspan="${#strings.isEmpty(student.firstParentMobile) ? 2 : 1}" th:text="*{firstParentPhone}"></td>
+                    <td th:unless="${#strings.isEmpty(student.firstParentMobile)}" th:text="*{firstParentMobile}"></td>
+                    <td th:colspan="${#strings.isEmpty(student.secondParentMobile) ? 2 : 1}" th:text="*{secondParentPhone}"></td>
+                    <td th:unless="${#strings.isEmpty(student.secondParentMobile)}" th:text="*{secondParentMobile}"></td>
+                </tr>
+                <tr>
+                    <th>Adresse e-mail</th>
+                    <td colspan="2" th:text="*{firstParentEmail}"></td>
+                    <td colspan="2" th:text="*{secondParentEmail}"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="row">
+            <table class="table table-bordered table-hover table-striped">
+                <tr>
+                    <th>Documents</th>
+                    <th class="fit-cell-content text-center">Action</th>
+                </tr>
+                <tr th:unless="${#strings.isEmpty(student.cniRecto)}">
+                    <td>Pièce d'identité (Recto)</td>
+                    <td class="text-center"><a target="_blank" th:href="@{'/explorer/' + ${student.cniRecto}}">Voir</a></td>
+                </tr>
+                <tr th:unless="${#strings.isEmpty(student.cniVerso)}">
+                    <td>Pièce d'identité (Verso)</td>
+                    <td class="text-center"><a target="_blank" th:href="@{'/explorer/' + ${student.cniVerso}}">Voir</a></td>
+                </tr>
+                <tr th:unless="${#strings.isEmpty(student.birthCertificate)}">
+                    <td>Acte de naissance</td>
+                    <td class="text-center"><a target="_blank" th:href="@{'/explorer/' + ${student.birthCertificate}}">Voir</a></td>
+                </tr>
+                <tr th:unless="${#strings.isEmpty(student.studentCard)}">
+                    <td>Carte d'étudiant</td>
+                    <td class="text-center"><a target="_blank" th:href="@{'/explorer/' + ${student.studentCard}}">Voir</a></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+</body>
+
+</html>

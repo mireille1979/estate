@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:insert="base.html :: head(${'Détails du logement'})"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper" th:object="${housing}">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/housing/list}">Liste des logements</a></li>
+                <li th:utext="*{'Détails du logement <b>[ ' + name + ' ]</b>'}"></li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-info-circle fa-fw"></i>
+                        <b>Informations sur le logement</b>
+                    </div>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <b>Nom</b>
+                            <span class="pull-right"><em th:text="*{name}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Standing</b>
+                            <span class="pull-right"><em th:text="*{standing?.name}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Catégorie</b>
+                            <span class="pull-right"><em th:text="*{category?.name}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Statut</b>
+                            <span class="pull-right"><em th:text="${#bools.isTrue(housing.available) ? 'Disponible' : 'Occupé'}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Actif</b>
+                            <span class="pull-right"><em th:text="${#bools.isTrue(housing.active) ? 'OUI' : 'NON'}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Créé par</b>
+                            <span class="pull-right"><em th:text="*{createdBy}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Date de création</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(creationDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Modifié par</b>
+                            <span class="pull-right"><em th:text="*{lastModifiedBy}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Date de modification</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(lastModifiedDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                    </div>
+                    <div class="panel-footer">
+                        <a role="button" th:href="@{/housing/save}" class="btn btn-success lazy-link mr-3">
+                            <i class="fa fa-plus-circle"></i>
+                            &nbsp; Ajouter
+                        </a>
+                        <a role="button" th:href="@{'/housing/save?id=' + ${housing.id}}" class="btn btn-primary lazy-link">
+                            <i class="fa fa-pencil-square-o"></i>
+                            &nbsp; Modifier
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

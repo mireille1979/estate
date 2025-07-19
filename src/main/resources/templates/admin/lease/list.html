@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="base.html :: head('Contrats de bail')"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li>Contrats de bail</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col mb-6">
+                <div class="panel-group" id="accordion" th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <button data-toggle="collapse" data-parent="#accordion" href="#collapseBox" class="collapsed btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                    &nbsp; Rechercher
+                                </button>
+                            </h4>
+                        </div>
+                        <div id="collapseBox" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <form th:object="${searchForm}" onsubmit="submitForm(event)" th:action="@{/lease/search}" autocomplete="off" method="post">
+                                    <input name="page" type="hidden" id="current-page" th:value="${currentPage}">
+                                    <div class="row">
+                                        <div class="form-group col-lg-6">
+                                            <label for="firstName" class="control-label">Nom de l'étudiant</label>
+                                            <input id="firstName" th:field="*{firstName}" class="form-control">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="lastName" class="control-label">Prénom de l'étudiant</label>
+                                            <input id="lastName" th:field="*{lastName}" class="form-control">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label class="control-label" for="standing">Standing</label>
+                                            <select id="standing" th:field="*{standingId}" class="form-control searchable-select-box">
+                                                <option value="">Tous les standings...</option>
+                                                <option th:each="standing: ${standings}" th:value="${standing.id}" th:text="${standing.name}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label class="control-label" for="housing">Logement</label>
+                                            <select id="housing" th:field="*{housingId}" class="form-control searchable-select-box">
+                                                <option value="">Tous les logements...</option>
+                                                <option th:each="housing: ${housings}" th:value="${housing.id}" th:text="${housing.name}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label class="control-label" for="state">Statut</label>
+                                            <select id="state" th:field="*{state}" class="form-control searchable-select-box">
+                                                <option value="">Tous les statuts...</option>
+                                                <option th:each="state: ${T(com.estate.domain.enumaration.State).values()}" th:value="${state}" th:text="${state.name}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label class="control-label" for="active">Résilié</label>
+                                            <select id="active" th:field="*{active}" class="form-control searchable-select-box">
+                                                <option value="">-</option>
+                                                <option value="false">Oui</option>
+                                                <option value="true">Non</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-success mr-2">
+                                        <i class="fa fa-search"></i>
+                                        &nbsp; Lancer la recherche
+                                    </button>
+                                    <button th:href="@{/lease/list}" role="link" class="lazy-link btn btn-default">
+                                        <i class="fa fa-refresh"></i>
+                                        &nbsp; Réinitialiser
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <b><u>NB:</u></b> &nbsp; Utilisez des critères précis lorsque c'est possible.
+                        </div>
+                    </div>
+                </div>
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <table id="data-list" data-pdf-title="LISTE DES CONTRATS DE BAIL" data-pdf-name="Liste des contrats de bail" data-columns-left="2" data-columns-right="2" class="table table-bordered paging searching dataTable">
+                    <thead>
+                        <tr>
+                            <th class="action fit-cell-content">N°</th>
+                            <th th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}">Résident</th>
+                            <th class="fit-cell-content">Logement</th>
+                            <th class="fit-cell-content">Standing</th>
+                            <th class="fit-cell-content">Période de validité</th>
+                            <th class="fit-cell-content">Actif</th>
+                            <th class="action fit-cell-content">Date de création</th>
+                            <th class="action fit-cell-content">Date de modification</th>
+                            <th class="action fit-cell-content">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="lease,iter: ${leases}" th:data-id="${lease.id}">
+                        <td th:text="${startIndex + iter.count}"></td>
+                        <td th:text="${lease.payment?.student?.user?.name}" th:if="${T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}"></td>
+                        <td th:text="${lease.housing?.name}"></td>
+                        <td th:text="${lease.payment?.standing?.name}"></td>
+                        <td th:classappend="${lease.background}">
+                            <span th:text="${#temporals.format(lease.startDate, 'dd/MM/yyyy')}"></span> - <span th:text="${#temporals.format(lease.endDate, 'dd/MM/yyyy')}"></span>
+                        </td>
+                        <td th:text="${#bools.isTrue(lease.active) ? 'OUI' : 'NON'}"></td>
+                        <td th:text="${#temporals.format(lease.creationDate, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td th:text="${#temporals.format(lease.lastModifiedDate, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td class="text-center fit-cell-content">
+                            <a class="dropdown-toggle" tabindex="0" data-toggle="popover" data-placement="auto" data-trigger="focus" th:data-target="${'popover-content-' + lease.id}" href="#">
+                                <i class="fa fa-ellipsis-h"></i>
+                            </a>
+                            <div th:id="${'popover-content-' + lease.id}" class="list-group" style="display: none">
+                                <a th:if="${lease.startDate != null && lease.active && T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}" class="list-group-item text-decoration-none text-left" th:href="@{'/lease/disable/' + ${lease.id}}" onclick="return confirm('Voulez-vous vraiment résilier ce contrat ?')">
+                                    <i class="fa fa-fw fa-close"></i> Résilier
+                                </a>
+                                <a class="list-group-item text-decoration-none text-left" th:href="@{'/lease/view/' + ${lease.id}}">
+                                    <i class="fa fa-eye fa-fw"></i> Détails
+                                </a>
+                                <a th:if="${lease.mutable && T(com.estate.domain.enumaration.Profil).STAFF.equals(session?.user?.profil)}" class="list-group-item text-decoration-none text-left" th:href="@{'/lease/save?id=' + ${lease.id}}">
+                                    <i class="fa fa-fw fa-pencil-square-o"></i> Modifier
+                                </a>
+                                <a th:if="${lease.startDate != null}" class="list-group-item text-decoration-none text-left" th:href="@{'/lease/download/' + ${lease.id}}">
+                                    <i class="fa fa-file-pdf-o fa-fw"></i> Télécharger
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div th:if="${totalPages > 1}" class="mt-6" id="pagination" th:title="${totalPages}" th:classappend="${search ? 'data-search' : ''}" th:aria-placeholder="${currentPage}" aria-label="lease/list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

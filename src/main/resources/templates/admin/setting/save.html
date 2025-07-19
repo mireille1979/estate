@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:insert="base.html :: head('Modification du paramètre')"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/setting/list}">Paramètres</a></li>
+                <li th:text="'Modification du paramètre'"></li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <b>Formulaire : </b> <span style="font-size: 13px">Les champs avec l'astérisque ( <span class="required-field">*</span> ) sont obligatoires</span>
+                    </div>
+                    <form th:object="${setting}" onsubmit="submitForm(event)" th:action="@{/setting/save}" autocomplete="off" method="post">
+                        <div class="panel-body">
+                            <input th:field="*{id}" type="hidden">
+                            <input th:field="*{code}" type="hidden">
+                            <div class="row">
+                                <div class="form-group col-lg-12">
+                                    <label class="control-label" for="name">Nom du paramètre <span class="required-field">*</span></label>
+                                    <input id="name" th:field="*{code.name}" class="form-control" autocomplete="off" readonly>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group col-lg-12" th:classappend="${#fields.hasErrors('value') ? 'has-error' : ''}">
+                                    <label class="control-label">Valeur <span class="required-field">*</span></label>
+                                    <input th:if="${T(com.estate.domain.enumaration.SettingType).TEXT.equals(setting.code.type)}" type="text" th:field="*{value}" class="form-control" autocomplete="off" required>
+                                    <input th:if="${T(com.estate.domain.enumaration.SettingType).EMAIL.equals(setting.code.type)}" type="email" th:field="*{value}" class="form-control" autocomplete="off" required>
+                                    <input th:if="${T(com.estate.domain.enumaration.SettingType).SYSTEM.equals(setting.code.type)}" type="text" th:field="*{value}" class="form-control" autocomplete="off" required>
+                                    <input th:if="${T(com.estate.domain.enumaration.SettingType).INTEGER.equals(setting.code.type)}" type="number" th:field="*{value}" step="1" class="form-control" autocomplete="off" required>
+                                    <input th:if="${T(com.estate.domain.enumaration.SettingType).DECIMAL.equals(setting.code.type)}" type="number" th:field="*{value}" step="0.01" class="form-control" autocomplete="off" required>
+                                    <input th:if="${T(com.estate.domain.enumaration.SettingType).DATE.equals(setting.code.type)}" type="date" th:field="*{value}" class="form-control" autocomplete="off" required>
+                                    <select th:if="${T(com.estate.domain.enumaration.SettingType).BOOLEAN.equals(setting.code.type)}" th:field="*{value}" class="form-control" required>
+                                        <option value="true" th:selected="${#bools.isTrue(setting.value)}">Oui</option>
+                                        <option value="false" th:selected="${#bools.isFalse(setting.value)}">Non</option>
+                                    </select>
+                                    <p th:if="${#fields.hasErrors('value')}" th:errors="*{value}" class="help-block"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <button type="submit" class="btn btn-success mr-2">
+                                <i class="fa fa-save"></i>
+                                &nbsp; Enregistrer
+                            </button>
+                            <button type="reset" class="btn btn-default">
+                                <i class="fa fa-refresh"></i>
+                                &nbsp; Réinitialiser
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

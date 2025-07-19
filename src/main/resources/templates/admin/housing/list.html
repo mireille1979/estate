@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="base.html :: head('Logements')"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li>Logements</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col mb-6">
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <button data-toggle="collapse" data-parent="#accordion" href="#collapseBox" class="collapsed btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                    &nbsp; Rechercher
+                                </button>
+                            </h4>
+                        </div>
+                        <div id="collapseBox" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <form th:object="${searchForm}" onsubmit="submitForm(event)" th:action="@{/housing/search}" autocomplete="off" method="post">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label" for="standing">Standing</label>
+                                                <select id="standing" th:field="*{standingId}" class="form-control">
+                                                    <option value="">Tous les standings...</option>
+                                                    <option th:each="standing: ${standings}" th:value="${standing.id}" th:text="${standing.name}" th:selected="${standing.id == searchForm?.standingId}"></option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label class="control-label" for="available">Statut</label>
+                                                <select id="available" th:field="*{available}" class="form-control">
+                                                    <option value="">Tous les statuts...</option>
+                                                    <option value="true">Disponible</option>
+                                                    <option value="false">Occupé</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-success mr-2">
+                                        <i class="fa fa-search"></i>
+                                        &nbsp; Lancer la recherche
+                                    </button>
+                                    <button th:href="@{/housing/list}" role="link" class="lazy-link btn btn-default">
+                                        <i class="fa fa-refresh"></i>
+                                        &nbsp; Réinitialiser
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <b><u>NB:</u></b> &nbsp; Utilisez des critères précis lorsque c'est possible.
+                        </div>
+                    </div>
+                </div>
+                <button id="add-item" role="link" class="lazy-link d-none" th:href="@{/housing/save}"></button>
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <table id="data-list" data-pdf-title="LISTE DES LOGEMENTS" data-pdf-name="Liste des logements" data-columns-left="2" data-columns-right="2" class="table table-bordered paging searching dataTable can-add">
+                    <thead>
+                        <tr>
+                            <th class="action fit-cell-content">N°</th>
+                            <th class="fit-cell-content">Nom</th>
+                            <th class="fit-cell-content">Standing</th>
+                            <th class="fit-cell-content">Statut</th>
+                            <th>Résident</th>
+                            <th class="fit-cell-content">Période de location</th>
+                            <th class="fit-cell-content">Actif</th>
+                            <th class="action fit-cell-content">Date de création</th>
+                            <th class="action fit-cell-content">Date de modification</th>
+                            <th class="action fit-cell-content">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="housing,iter: ${housings}" th:data-id="${housing.id}">
+                            <td th:text="${iter.count}"></td>
+                            <td th:text="${housing.name}"></td>
+                            <td th:text="${housing.standing?.name}"></td>
+                            <td th:text="${#bools.isTrue(housing.available) ? 'Disponible' : 'Occupé'}"></td>
+                            <td th:text="${housing.resident?.user?.name}"></td>
+                            <td th:classappend="${housing.resident?.currentLease?.background}">
+                                <span th:text="${#temporals.format(housing.resident?.currentLease?.startDate, 'dd/MM/yyyy')}"></span> - <span style="font-weight: bold" th:text="${#temporals.format(housing.resident?.currentLease?.realEndDate, 'dd/MM/yyyy')}"></span>
+                            </td>
+                            <td th:text="${#bools.isTrue(housing.active) ? 'OUI' : 'NON'}"></td>
+                            <td th:text="${#temporals.format(housing.creationDate, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td th:text="${#temporals.format(housing.lastModifiedDate, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td class="text-center fit-cell-content">
+                                <a class="dropdown-toggle" tabindex="0" data-toggle="popover" data-placement="auto" data-trigger="focus" th:data-target="${'popover-content-' + housing.id}" href="#">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </a>
+                                <div th:id="${'popover-content-' + housing.id}" class="list-group" style="display: none">
+                                    <a class="list-group-item text-decoration-none text-left" th:href="@{'/housing/toggle/' + ${housing.id}}">
+                                        <i class="fa fa-fw" th:classappend="${housing.active ? 'fa-toggle-off' : 'fa-toggle-on'}"></i> <span th:text="${housing.active ? 'Désactiver' : 'Activer'}"></span>
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" th:href="@{'/housing/view/' + ${housing.id}}">
+                                        <i class="fa fa-eye fa-fw"></i> Détails
+                                    </a>
+                                    <a th:unless="${housing.available}" class="list-group-item text-decoration-none text-left" th:href="@{'/housing/liberate/' + ${housing.id}}">
+                                        <i class="fa fa-truck fa-fw"></i> Libérer
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" th:href="@{'/housing/save?id=' + ${housing.id}}">
+                                        <i class="fa fa-pencil-square-o fa-fw"></i> Modifier
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left text-danger" th:data-housing-id="${housing.id}" onclick="deleteItem(this.getAttribute('data-housing-id'), 'housing/delete')" href="#">
+                                        <i class="fa fa-trash-o fa-fw"></i> Supprimer
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

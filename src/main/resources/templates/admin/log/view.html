@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:insert="base.html :: head(${'Détails sur l''évènement'})"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper" th:object="${log}">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/log/list}">Historique</a></li>
+                <li th:utext="*{'Détails de l''évènement <b>[ ' + id + ' ]</b>'}"></li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-info-circle fa-fw"></i>
+                        <b>Détails sur l'évènement</b>
+                    </div>
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <b>Type</b>
+                            <span class="pull-right"><em th:text="*{level?.name}"></em></span>
+                        </div>
+                        <div class="list-group-item">
+                            <b>Créé par</b>
+                            <span class="pull-right"><em th:text="*{createdBy}"></em></span>
+                        </div>
+                        <div class="list-group-item">
+                            <b>Date et heure</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(creationDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </div>
+                        <div class="list-group-item">
+                            <b>Message</b>
+                            <span class="pull-right"><em th:utext="*{message}"></em></span>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${T(com.estate.domain.enumaration.Level).ERROR.equals(log?.level)}" class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <button data-toggle="collapse" data-parent="#accordion" href="#collapseBox" class="collapsed btn btn-primary">
+                                    <i class="fa fa-list"></i>
+                                    &nbsp; Plus de détails
+                                </button>
+                            </h4>
+                        </div>
+                        <div id="collapseBox" class="panel-collapse collapse">
+                            <div class="panel-body" th:utext="*{details}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

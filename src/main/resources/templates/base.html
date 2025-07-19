@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head th:fragment="head(title)">
+        <meta charset="utf-8">
+        <meta th:if="${#arrays.contains(@environment.getActiveProfiles(), 'production')}" http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="ctx" th:content="${#httpServletRequest.getContextPath()}"/>
+        <title th:text="${title}"></title>
+        <link rel="icon" type="image/x-ico" th:href="@{/images/favicon.png}">
+        <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+        <link th:href="@{/css/font-awesome.css}" rel="stylesheet">
+        <link th:href="@{/css/sb-admin.css}" rel="stylesheet">
+        <link th:href="@{/css/jquery.dataTables.min.css}" rel="stylesheet">
+        <link th:href="@{/css/dataTables.checkboxes.css}" rel="stylesheet">
+        <link th:href="@{/css/buttons.dataTables.min.css}" rel="stylesheet">
+        <link th:href="@{/css/fixedColumns.dataTables.min.css}" rel="stylesheet">
+        <link th:href="@{/css/pagination.min.css}" rel="stylesheet">
+        <link th:href="@{/css/select2.min.css}" rel="stylesheet">
+        <link th:href="@{/css/fancybox.css}" rel="stylesheet">
+    </head>
+    <body>
+        <div id="wrapper">
+            <div th:replace="header.html"></div>
+            <div id="page-wrapper">
+                <div th:fragment="breadcrumb(title)" class="row">
+                    <h4 th:text="${title}"></h4>
+                    <hr>
+                </div>
+                <!--/*@thymesVar id="notification" type="com.estate.domain.entity.Notification"*/-->
+                <div th:fragment="alert(notification)" th:classappend="${notification?.type?.style}" th:if="${notification}" class="alert alert-dismissable">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                    <span th:utext="${notification?.message}"></span>
+                </div>
+            </div>
+        </div>
+        <th:block th:fragment="scripts">
+        <script th:src="@{/js/jquery.min.js}"></script>
+        <script th:src="@{/js/bootstrap.min.js}"></script>
+        <script th:src="@{/js/jquery.metisMenu.js}"></script>
+        <script th:src="@{/js/fancybox.js}"></script>
+        <script th:src="@{/js/sb-admin.js}"></script>
+        <script th:src="@{/js/datatables.min.js}"></script>
+        <script th:src="@{/js/dataTables.checkboxes.min.js}"></script>
+        <script th:src="@{/js/dataTables.buttons.min.js}"></script>
+        <script th:src="@{/js/dataTables.fixedColumns.min.js}"></script>
+        <script th:src="@{/js/jszip.min.js}"></script>
+        <script th:src="@{/js/pdfmake.min.js}"></script>
+        <script th:src="@{/js/vfs_fonts.js}"></script>
+        <script th:src="@{/js/buttons.html5.min.js}"></script>
+        <script th:src="@{/js/buttons.print.min.js}"></script>
+        <script th:src="@{/js/buttons.colVis.min.js}"></script>
+        <script th:src="@{/js/loadingoverlay.min.js}"></script>
+        <script th:src="@{/js/pagination.min.js}"></script>
+        <script th:src="@{/js/jspdf.min.js}"></script>
+        <script th:src="@{/js/html2canvas.min.js}"></script>
+        <script th:src="@{/js/html2pdf.min.js}"></script>
+        <script th:src="@{/js/select2.min.js}"></script>
+        <script th:src="@{/js/concorde.js}"></script>
+        </th:block>
+    </body>
+</html>

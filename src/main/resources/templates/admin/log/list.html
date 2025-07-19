@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en">
+
+<head th:replace="base.html :: head('Historique')"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li>Historique</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col mb-6">
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <button data-toggle="collapse" data-parent="#accordion" href="#collapseBox" class="collapsed btn btn-primary">
+                                    <i class="fa fa-search"></i>
+                                    &nbsp; Rechercher
+                                </button>
+                            </h4>
+                        </div>
+                        <div id="collapseBox" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <form th:object="${searchForm}" onsubmit="submitForm(event)" th:action="@{/log/search}" autocomplete="off" method="post">
+                                    <div class="row">
+                                        <div class="form-group col-lg-6">
+                                            <label for="level">Type</label>
+                                            <select id="level" th:field="*{level}" class="form-control">
+                                                <option value=""></option>
+                                                <option th:each="level: ${T(com.estate.domain.enumaration.Level).values()}" th:value="${level}" th:text="${level.name}"></option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="message">Mots clés</label>
+                                            <input id="message" th:field="*{message}" class="form-control">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="start">A partir du</label>
+                                            <input id="start" type="date" th:field="*{startDate}" class="form-control">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="end">Jusqu'au</label>
+                                            <input id="end" type="date" th:field="*{endDate}" class="form-control">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-success mr-2">
+                                        <i class="fa fa-search"></i>
+                                        &nbsp; Lancer la recherche
+                                    </button>
+                                    <button th:href="@{/log/list}" role="link" class="lazy-link btn btn-default">
+                                        <i class="fa fa-refresh"></i>
+                                        &nbsp; Réinitialiser
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <b><u>NB:</u></b> &nbsp; Utilisez des critères précis lorsque c'est possible.
+                        </div>
+                    </div>
+                </div>
+                <button sec:authorize="hasRole('ADMIN')" id="delete-items" role="link" class="d-none" onclick="invokeActionOnItems('log/delete', 'supprimer')"></button>
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <table id="data-list" data-pdf-title="HISTORIQUE" data-pdf-name="Historique" data-columns-left="2" data-columns-right="3" class="table table-striped table-bordered table-hover paging searching landscape dataTable fixed-columns" th:classappend="${#authorization.expression('hasRole(''ADMIN'')') ? 'can-delete multiple-selection exclude-first-sort' : ''}">
+                    <thead>
+                        <tr>
+                            <th sec:authorize="hasRole('ADMIN')" class="action fit-cell-content">
+                                <input type="checkbox">
+                            </th>
+                            <th>Type</th>
+                            <th>Message</th>
+                            <th>Créé par</th>
+                            <th>Date et heure</th>
+                            <th class="action fit-cell-content">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="log,iter: ${logs}" th:data-id="${log.id}">
+                            <td sec:authorize="hasRole('ADMIN')">
+                                <input th:data-index="${iter.count}" type="checkbox">
+                            </td>
+                            <td th:text="${log.level.name}"></td>
+                            <td th:utext="${log.message}"></td>
+                            <td th:text="${log.createdBy}"></td>
+                            <td th:text="${#temporals.format(log.creationDate, 'dd-MM-yyyy  HH:mm')}"></td>
+                            <td class="text-center">
+                                <a class="dropdown-toggle" tabindex="0" data-toggle="popover" data-placement="auto" data-trigger="focus" th:data-target="${'popover-content-' + log.id}" href="#">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </a>
+                                <div th:id="${'popover-content-' + log.id}" class="list-group" style="display: none">
+                                    <a class="list-group-item text-decoration-none text-left" th:href="@{'/log/view/' + ${log.id}}">
+                                        <i class="fa fa-eye fa-fw"></i> Détails
+                                    </a>
+                                    <a sec:authorize="hasRole('ADMIN')" class="list-group-item text-decoration-none text-danger text-left" th:data-log-id="${log.id}" onclick="deleteItem(this.getAttribute('data-log-id'), 'log/remove')" href="#">
+                                        <i class="fa fa-trash-o fa-fw"></i> Supprimer
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div th:if="${totalPages > 1}" class="mt-6" id="pagination" th:title="${totalPages}" th:aria-placeholder="${currentPage}" aria-label="log/list"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+</body>
+</html>

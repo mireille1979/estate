@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en">
+
+<head th:insert="base.html :: head(${'Détails de l''utilisateur'})"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper" th:object="${user}">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li><a class="lazy-link" th:href="@{/user/list}">Utilisateurs</a></li>
+                <li th:utext="*{'Détails de l''utilisateur <b>[ ' + name + ' ]</b>'}"></li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-info-circle fa-fw"></i>
+                        <b>Informations sur l'utilisateur</b>
+                    </div>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item">
+                            <b>Nom</b>
+                            <span class="pull-right"><em th:text="*{firstName}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Prénom</b>
+                            <span class="pull-right"><em th:text="*{lastName}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Sexe</b>
+                            <span class="pull-right"><em th:text="*{gender?.name}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Numéro de téléphone</b>
+                            <span class="pull-right"><em th:text="*{phone}"></em><em th:if="${user?.mobile != null}" th:text="${' / ' + user.mobile}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Adresse email</b>
+                            <span class="pull-right"><em th:text="*{email}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Statut du compte</b>
+                            <span class="pull-right"><em th:text="${#bools.isTrue(user?.active) ? 'ACTIF' : 'DÉSACTIVÉ'}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Rôles</b>
+                            <span class="pull-right">
+                                <span th:each="role, iter: ${user.roles}" th:text="${role.name + (iter.last ? '' : ', ')}"></span>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Responsabilités</b>
+                            <span class="pull-right">
+                                <span th:each="mode, iter: ${user.modes}" th:text="${mode.name + (iter.last ? '' : ', ')}"></span>
+                            </span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Créé par</b>
+                            <span class="pull-right"><em th:text="${user.createdBy}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Date d'enregistrement</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(creationDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Modifié par</b>
+                            <span class="pull-right"><em th:text="${user.lastModifiedBy}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Date de modification</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(lastModifiedDate, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                        <a href="#" class="list-group-item">
+                            <b>Date de la dernière connexion</b>
+                            <span class="pull-right"><em th:text="*{#temporals.format(lastLogin, 'dd-MM-yyyy  HH:mm')}"></em></span>
+                        </a>
+                    </div>
+                    <div class="panel-footer" sec:authorize="hasRole('ADMIN')">
+                        <a role="button" th:href="@{/user/save}" class="btn btn-success lazy-link mr-3">
+                            <i class="fa fa-plus-circle"></i>
+                            &nbsp; Ajouter
+                        </a>
+                        <a role="button" th:href="@{'/user/save?id=' + ${user.id}}" class="btn btn-primary lazy-link">
+                            <i class="fa fa-pencil-square-o"></i>
+                            &nbsp; Modifier
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+
+</body>
+
+</html>

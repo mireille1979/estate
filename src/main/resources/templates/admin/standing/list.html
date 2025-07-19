@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en">
+
+<head th:replace="base.html :: head('Liste des standings')"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li>Standings</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col mb-6">
+                <button id="add-item" role="link" class="lazy-link d-none" sec:authorize="hasRole('ADMIN')" th:href="@{/standing/save}"></button>
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <table id="data-list" data-pdf-title="LISTE DES STANDINGS" data-pdf-name="Liste des standings" class="table table-striped table-bordered table-hover dataTable searching paging" th:classappend="${#authorization.expression('hasRole(''ADMIN'')') ? 'can-add' : ''}">
+                    <thead>
+                        <tr>
+                            <th class="action fit-cell-content">N°</th>
+                            <th>Nom</th>
+                            <th>Loyer par mois (FCFA)</th>
+                            <th>Caution (FCFA)</th>
+                            <th>Frais de réhabilitation (FCFA)</th>
+                            <th class="fit-cell-content">Statut</th>
+                            <th class="action fit-cell-content">Date de création</th>
+                            <th class="action fit-cell-content">Date de modification</th>
+                            <th class="action fit-cell-content">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="standing,iter: ${standings}" th:data-id="${standing.id}">
+                            <td th:text="${iter.count}"></td>
+                            <td th:text="${standing.name}"></td>
+                            <td th:text="${#numbers.formatInteger(standing.rent, 1, 'WHITESPACE')}"></td>
+                            <td th:text="${#numbers.formatInteger(standing.caution, 1, 'WHITESPACE')}"></td>
+                            <td th:text="${#numbers.formatInteger(standing.repair, 1, 'WHITESPACE')}"></td>
+                            <td th:text="${#bools.isTrue(standing.active) ? 'ACTIF' : 'DÉSACTIVÉ'}"></td>
+                            <td th:text="${#temporals.format(standing.creationDate, 'dd-MM-yyyy hh:mm')}"></td>
+                            <td th:text="${#temporals.format(standing.lastModifiedDate, 'dd-MM-yyyy hh:mm')}"></td>
+                            <td class="text-center fit-cell-content">
+                                <a class="dropdown-toggle" tabindex="0" data-toggle="popover" data-placement="auto" data-trigger="focus" th:data-target="${'popover-content-' + standing.id}" href="#">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </a>
+                                <div th:id="${'popover-content-' + standing.id}" class="list-group" style="display: none">
+                                    <a class="list-group-item text-decoration-none text-left" sec:authorize="hasRole('ADMIN')" th:href="@{'/standing/toggle/' + ${standing.id}}">
+                                        <i class="fa fa-fw" th:classappend="${standing.active ? 'fa-toggle-off' : 'fa-toggle-on'}"></i> <span th:text="${standing.active ? 'Désactiver' : 'Activer'}"></span>
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" th:href="@{'/standing/view/' + ${standing.id}}">
+                                        <i class="fa fa-eye fa-fw"></i> Détails
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" sec:authorize="hasRole('ADMIN')" th:href="@{'/standing/save?id=' + ${standing.id}}">
+                                        <i class="fa fa-pencil-square-o fa-fw"></i> Modifier
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left text-danger" sec:authorize="hasRole('ADMIN')" th:data-standing-id="${standing.id}" onclick="deleteItem(this.getAttribute('data-standing-id'), 'standing/delete')" href="#">
+                                        <i class="fa fa-trash-o fa-fw"></i> Supprimer
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+</body>
+
+</html>

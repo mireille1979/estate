@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en">
+<head th:replace="base.html :: head('Utilisateurs')"></head>
+
+<body>
+<div id="wrapper">
+    <div th:replace="header.html"></div>
+    <div id="page-wrapper">
+        <div class="row mt-6">
+            <ol class="breadcrumb">
+                <li><i class="fa fa-home"></i> <a class="lazy-link" th:href="@{/dashboard}">Accueil</a></li>
+                <li>Utilisateurs</li>
+            </ol>
+        </div>
+        <div class="row">
+            <div class="col mb-6">
+                <button id="add-item" role="link" class="lazy-link d-none" sec:authorize="hasRole('ADMIN')" th:href="@{/user/save}"></button>
+                <div th:replace="base.html :: alert(${notification})"></div>
+                <table id="data-list" data-pdf-title="LISTE DES UTILISATEURS" data-pdf-name="Liste des utilisateurs" class="table table-striped table-bordered table-hover paging landscape searching dataTable" th:classappend="${#authorization.expression('hasRole(''ADMIN'')') ? 'can-add' : ''}">
+                    <thead>
+                        <tr>
+                            <th class="fit-cell-content">N°</th>
+                            <th>Nom et Prénom</th>
+                            <th class="fit-cell-content">Sexe</th>
+                            <th>Téléphone</th>
+                            <th>Adresse e-mail</th>
+                            <th class="fit-cell-content">Statut</th>
+                            <th class="fit-cell-content">Rôles</th>
+                            <th class="fit-cell-content">Responsabilités</th>
+                            <th class="fit-cell-content">Dernière connexion</th>
+                            <th class="action fit-cell-content">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user,iter: ${users}" th:data-id="${user.id}">
+                            <td th:text="${iter.count}"></td>
+                            <td>
+                                <a class="lazy-link" th:href="@{'/user/view/' + ${user.id}}" th:text="${user.name}"></a>
+                            </td>
+                            <td th:text="${user.gender?.name}"></td>
+                            <td>
+                                <span th:text="${user.phone}"></span><br>
+                                <span th:text="${user.mobile}"></span>
+                            </td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.active ? 'ACTIF' : 'DÉSACTIVÉ'}"></td>
+                            <td>
+                                <span th:each="role: ${user.roles}">
+                                    <span th:text="${role.name}"></span><br>
+                                </span>
+                            </td>
+                            <td>
+                                <span th:each="mode: ${user.modes}">
+                                    <span th:text="${mode.name}"></span><br>
+                                </span>
+                            </td>
+                            <td th:text="${#temporals.format(user.lastLogin, 'dd-MM-yyyy  HH:mm')}"></td>
+                            <td class="fit-cell-content text-center">
+                                <a class="dropdown-toggle" tabindex="0" data-toggle="popover" data-placement="auto" data-trigger="focus" th:data-target="${'popover-content-' + user.id}" href="#">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </a>
+                                <div th:id="${'popover-content-' + user.id}" class="list-group" style="display: none">
+                                    <a class="list-group-item text-decoration-none text-left" th:if="${user.id != session?.user?.id}" sec:authorize="hasRole('ADMIN')" th:href="@{'/user/toggle/' + ${user.id}}">
+                                        <i class="fa fa-fw" th:classappend="${user.active ? 'fa-toggle-off' : 'fa-toggle-on'}"></i> <span th:text="${user.active ? 'Désactiver' : 'Activer'}"></span>
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" th:href="@{'/user/view/' + ${user.id}}">
+                                        <i class="fa fa-eye fa-fw"></i> Détails
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left" sec:authorize="hasRole('ADMIN')" th:href="@{'/user/save?id=' + ${user.id}}">
+                                        <i class="fa fa-pencil-square-o fa-fw"></i> Modifier
+                                    </a>
+                                    <a class="list-group-item text-decoration-none text-left text-danger" th:if="${user.id != session?.user?.id}" sec:authorize="hasRole('ADMIN')" th:data-user-id="${user.id}" onclick="deleteItem(this.getAttribute('data-user-id'), 'user/delete')" href="#">
+                                        <i class="fa fa-trash-o fa-fw"></i> Supprimer
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="base.html :: scripts"></th:block>
+</body>
+
+</html>

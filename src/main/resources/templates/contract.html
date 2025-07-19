@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>CONTRAT DE BAIL</title>
+        <link th:href="@{classpath:static/css/contract.css}" rel="stylesheet"/>
+    </head>
+    <body>
+        <table style="width: 100%; margin-bottom: 20px">
+            <tr>
+                <td style="width: 40%; text-align: left; vertical-align: top">
+                    <b>UNIVERSITÉ DE YAOUNDE 1</b> <br/>
+                    <i>THE UNIVERSITY OF YAOUNDÉ 1</i> <br/>
+                    BP :  337 Yaoundé, Cameroun<br/>
+                    TEL : (+237) 222 22 13 20<br/>
+                    <b>ANTENNE LOCALE DE LA BRIGADE <br/>
+                    SPÉCIALE DES LOYERS DES LOGEMENTS <br/>
+                    D'ÉTUDIANTS DANS LES MINICITÉS DE <br/>
+                    L'UNIVERSITÉ DE YAOUNDÉ 1</b>
+                </td>
+                <td style="width: 20%; text-align: center">
+                    <img style="width: 100px" th:src="@{classpath:static/images/uy1.png}" alt="logo" />
+                </td>
+                <td style="width: 40%; text-align: center; vertical-align: top">
+                    <b>RÉPUBLIQUE DU CAMEROUN</b> <br/>
+                    <i>REPUBLIC OF CAMEROUN</i> <br/>
+                    <b>PAIX-TRAVAIL-PATRIE</b> <br/>
+                    <i>PEACE-WORK-FATHERLAND</i>
+                </td>
+            </tr>
+        </table>
+        <h1 style="text-align: center">CONTRAT DE LOCATION</h1>
+        <h3 style="text-align: center; margin-bottom: 20px">N° <span th:text="${contractId}"></span></h3>
+        <p>
+            Il est conclu entre <br/>
+            M. <span class="field" th:text="${landlordName}"></span> CNI N° <span class="field" th:text="${landlordCardId}"></span><br/>
+            Domicilié (à) <span class="field" th:text="${landlordAddress}"></span><br/>
+            Adresse/Téléphone <span class="field" th:text="${landlordPhone}"></span><br/>
+            Propriétaire bailleur de la mini-cité dénommée <span class="field">CONCORDE</span><br/>
+            Sise à <span class="field">Cradat, Yaoundé</span><br/>
+            Ci-dessus désigné(e) le propriétaire bailleur ou son représentant d'une part<br/>
+            Et M. <span class="field mr-2" th:text="${lease.payment?.student?.user?.name}"></span> CNI N° <span class="field" th:text="${lease.payment?.student?.cniNumber}"></span><br/>
+            Étudiant(e) à l'Université de Yaoundé 1<br/>
+            Établissement <span class="field mr-2" th:text="${lease.payment?.student?.school}"></span> Filière <span class="field mr-2" th:text="${lease.payment?.student?.specialities}"></span> Niveau <span class="field mr-2" th:text="${lease.payment?.student?.grade?.name}"></span> Matricule <span class="field" th:text="${lease.payment?.student?.matricule}"></span> <br/>
+            Ci-dessus dénommé(e) l'étudiant d'une part<br/>
+            Un contrat de location d'une chambre dans les conditions fixées par les dispositions suivantes :
+        </p>
+        <p class="article">
+            <u><b>Article 1 : L'objet du contrat </b></u> <br/>
+            Le présent contrat porte sur la location d'un logement d'étudiant à la mini-cité dénommée <span class="field">CONCORDE</span> classée à la catégorie <span class="field" th:text="${cityCategory}"></span> par l'antenne locale de la brigade spéciale des loyers des logements
+            d'étudiants des Universités d'Etat du Cameroun
+        </p>
+        <p class="article">
+            <u><b>Article 2 : Les caractéristiques de la chambre </b></u> <br/>
+            Les caractéristiques de la chambre sont celles qui ont déterminé le classement de la chambre dans la catégorie
+        </p>
+        <p class="article">
+            <u><b>Article 3 :</b></u> Après consultation du document classant cette minicité par les deux parties, un constat de l'état des lieux de ladite chambre sera jointe au contrat.
+        </p>
+        <p class="article">
+            <u><b>Article 4 : La durée du contrat</b></u> <br/>
+            Le présent contrat est établi pour une durée de 12 mois, allant du <span class="field" th:text="${#temporals.format(lease.startDate, 'dd/MM/yyyy')}"></span> au <span class="field" th:text="${#temporals.format(lease.endDate, 'dd/MM/yyyy')}"></span>. La location sera renouvelable par tacite reconduction, sauf en cas de dénonciation par l'une ou l'autre partie notifiée à l'intéressé deux mois
+            au moins avant la fin de l'année scolaire, avec copie de l'antenne locale.
+        </p>
+        <p class="article">
+            <u><b>Article 5 : Les litiges</b></u> <br/>
+            Les parties du présent contrat s'engagent à privilégier le dialogue dans la résolution de tout conflit qui naitra à l'occasion de son exécution. En cas de divergence persistante, elles s'engagent à soumettre les conflits à l'arbitrage de l'Antenne locale de la brigade spéciale des loyers des logements
+            d'étudiants de l'Université de Yaoundé 1.
+        </p>
+        <p class="article">
+            <u><b>Article 6 : Les résolutions</b></u> <br/>
+            Les deux parties s'engagent à respecter les clauses du présent contrat qui reprend les dispositions des textes en vigeur régissant les loyers des logements d'étudiants des Universités d'Etat
+        </p>
+        <p>
+            Fait en 3 exemplaires <br/>
+            A Yaoundé le <span class="field" th:text="${#temporals.format(lease.startDate, 'dd/MM/yyyy')}"></span>
+        </p>
+        <p style="text-align: center">
+            Lu et approuvé
+        </p>
+            <p>
+                <span style="float: left">Le propriétaire bailleur</span>
+                <span style="float: right">L'étudiant(e) locataire</span>
+            </p>
+    </body>
+</html>
