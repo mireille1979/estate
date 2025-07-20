@@ -30,12 +30,12 @@ public class InitDataService implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        User user = userRepository.findByEmail("gatienjordanlonlaep@gmail.com").orElse(new User());
+        User user = userRepository.findByEmail("kmireille2017@yahoo.com").orElse(new User());
         if(StringUtils.isBlank(user.getId())){
-            user.setEmail("gatienjordanlonlaep@gmail.com");
-            user.setFirstName("LONLA");
-            user.setLastName("Gatien Jordan");
-            user.setPhone("+237 695463868");
+            user.setEmail("kmireille2017@yahoo.com");
+            user.setFirstName("KOM KOM");
+            user.setLastName("Jeanne Mireille");
+            user.setPhone("+237 699578924");
             user.setProfil(Profil.STAFF);
             user.setPassword(new BCryptPasswordEncoder().encode("admin"));
             user.setRoles(Collections.singletonList(Role.ROLE_ADMIN));
